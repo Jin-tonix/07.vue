@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div id="app">
+        <input type="text" v-model="searchText">
+        <button @click="searchImages">Search</button>
+
+        <div v-if="Object.keys(filteredEmojis).length > 0">
+            <img v-for="(image, key) in filteredEmojis" :key="key" :src="image" style="width:50px; margin: 10px;">
+        </div>
+        <div v-else>
+            <p>No images found.</p>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive, watchEffect } = Vue;
+
+        createApp({
+            setup() {
+                const searchText = ref('');
+                const emojis = reactive({});
+                
+                // 필터링된 이모지를 담을 객체 추가
+                const filteredEmojis = reactive({});
+
+                watchEffect(async () => {
+                    await searchImages();
+                });
+
+                const searchImages = async () => {
+                    try {
+                        const response = await fetch("https://api.github.com/emojis");
+                        const data = await response.json();
+                        Object.assign(emojis, data);
+                        filterEmojis();
+                    } catch (error) {
+                        console.error('Error fetching images:', error);
+                    }
+                };
+                
+                // 검색어에 따라 이모지 필터링
+                const filterEmojis = () => {
+                    const filtered = {};
+                    for (const [key, value] of Object.entries(emojis)) {
+                        if (key.includes(searchText.value)) {
+                            filtered[key] = value;
+                        }
+                    }
+                    Object.assign(filteredEmojis, filtered);
+                };
+
+                return { searchText, emojis, filteredEmojis, searchImages };
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>

@@ -22,16 +22,18 @@
             margin: 0;
         }
 
+        .parent-container {}
+
         .larger-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(6, 6, 6, 0.5);
+            border: 1px solid black;
             padding: 20px;
             width: 400px;
             height: 500px;
-            overflow: auto;
+
         }
 
         .container {
@@ -43,15 +45,6 @@
             padding: 20px;
             width: 400px;
             height: 500px;
-            overflow: auto;
-        }
-
-        .button-section {
-            display: flex;
-            justify-content: center;s
-            border: 3px solid black;
-            padding: 20px;
-            margin: 20px;
         }
 
         .row {
@@ -94,11 +87,74 @@
 </head>
 
 <body>
-    <div id="app">
+    <template>
+        <div id="app">
+            <header>
+                <h1>Vue Template</h1>
+                <nav>
+                    <router-link to="/view-template">View Template 이해하기</router-link>
+                    <router-link to="/familiarize-template">View Template 익숙해지기</router-link>
+                </nav>
+            </header>
+            <router-view></router-view>
+        </div>
+    </template>
+
+
+    <template>
+        <div>
+            <header>
+                <h2>View Template 이해하기</h2>
+            </header>
+            <br>
+            <div class="parent-container">
+                <button @click="toggleRegisterMode">{{ isCharacterRegister ? 'Skill Register' : 'Character Register' }}
+                    조회하기</button>
+
+                <div class="larger-container">
+                    <select v-model="selected" @change="check">
+                        <option value="skill register">Skill Register</option>
+                        <option value="character register">Character Register</option>
+                    </select>
+
+                    <div class="container">
+                        <template v-if="isCharacterRegister">
+                            <label>skill:</label> <input v-model="skill" />
+                            <br>
+                            <label>list:</label> <input v-model="list" />
+                            <br>
+                            <label>introduction:</label> <input v-model="introduction" />
+                            <br>
+                            <label>img:</label> <input v-model="img" />
+                            <br>
+                        </template>
+                        <template v-else>
+                            <label>name:</label> <input v-model="name" />
+                            <br>
+                            <label>introduction:</label> <input v-model="introduction" />
+                            <br>
+                            <label for="imgInput">Image URL:</label>
+                            <input id="imgInput" v-model="img" placeholder="" />
+                            <div v-if="img">
+                                <img :src="img" alt="Dynamic Image" style="max-width: 100%; height: auto;" />
+                            </div>
+                    </div>
+                </div>
+            </div>
+    </template>
+
+
+    <div class="save">
+        <button @click="save">저장하기</button>
+    </div>
+    </template>
+    </div>
+
+    <div class="info">
         <header>
             <h1>vue template 익숙해지기</h1>
         </header>
-        <button @click="toggleRegisterMode">{{ isCharacterRegister ? 'skill register ' : 'character register '
+        <button @click="toggleRegisterMode">{{ isCharacterRegister ? 'Skill Register ' : 'Character Register '
             }}</button>
 
 
@@ -129,50 +185,18 @@
                 </div>
             </template>
         </div>
-
-
-        <header>
-            <h1>vue template 이해하기</h1>
-        </header>
-        <br>
-
-        <button @click="toggleRegisterMode">조회하기</button>
-        <div class="larger-container">
-            <select v-model="selected" @change="check">
-                <option value="skill register">Character Register</option>
-                <option value="character register">Skill Register</option>
-            </select>
-
-            <div class="container">
-                <template v-if="isCharacterRegister">
-                    <label>skill:</label> <input v-model="skill" />
-                    <br>
-                    <label>list:</label> <input v-model="list" />
-                    <br>
-                    <label>introduction:</label> <input v-model="introduction" />
-                    <br>
-                    <label>img:</label> <input v-model="img" />
-                    <br>
-                </template>
-                <template v-else>
-                    <label>name:</label> <input v-model="name" />
-                    <br>
-                    <label>introduction:</label> <input v-model="introduction" />
-                    <br>
-                    <label for="imgInput">Image URL:</label>
-                    <input id="imgInput" v-model="img" placeholder="" />
-                    <div v-if="img">
-                        <img :src="img" alt="Dynamic Image" style="max-width: 100%; height: auto;" />
-                    </div>
-            </div>
-            </template>
-        </div>
     </div>
 
 
     <script>
         const { createApp, ref } = Vue;
-
+       
+        export default {
+            name: 'ViewTemplate'
+            name: 'App'
+        }
+    
+        
         createApp({
             setup() {
                 const skill = ref("");
@@ -186,6 +210,7 @@
                 const jsonSkill = ref(msaSkill);
                 const isCharacterMode = ref(true);
                 const isCharacterRegister = ref(true);
+                const toggleReview = ref(true);
 
                 const check = () => {
                     console.log(selected.value);
@@ -195,6 +220,20 @@
                     isCharacterMode.value = !isCharacterMode.value;
                 };
 
+                const toggleview = () => {
+                    isCharacterRegister.value = !isCharacterRegister.value;
+
+                    if (isCharacterRegister.value) {
+                        selected.value = 'character register';
+
+                        return row;
+
+                    } else {
+                        selected.value = 'skill register';
+
+                        return row;
+                    }
+                };
                 const toggleRegisterMode = () => {
                     isCharacterRegister.value = !isCharacterRegister.value;
                     if (isCharacterRegister.value) {
@@ -203,6 +242,9 @@
                         selected.value = 'skill register';
                     }
                 };
+
+
+
 
                 return {
                     skill,
